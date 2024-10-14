@@ -84,7 +84,7 @@ function create() {
     this.jumpText = this.add
         .text(window.innerWidth / 2, window.innerHeight - 150, "Jump!", {
             fontFamily: "Montserrat",
-            fontSize: "32px",
+            fontSize: "52px",
             color: "#000000", // Black color for the text
             align: "center",
         })
@@ -137,7 +137,7 @@ function create() {
     this.startText = this.add
         .text(window.innerWidth / 2, window.innerHeight / 2, "Start Game", {
             fontFamily: "Montserrat",
-            fontSize: "42px",
+            fontSize: "50px",
             color: "#000000",
         })
         .setOrigin(0.5)
@@ -166,7 +166,7 @@ function create() {
             window.innerHeight / 2 + 50,
             400,
             100,
-            0x0000ff
+            0xf5d932
         )
         .setDepth(5)
         .setInteractive()
@@ -178,8 +178,8 @@ function create() {
     this.restartText = this.add
         .text(window.innerWidth / 2, window.innerHeight / 2 + 50, "Restart", {
             fontFamily: "Montserrat",
-            fontSize: "36px",
-            color: "#ffffff",
+            fontSize: "50px",
+            color: "#000000",
         })
         .setOrigin(0.5)
         .setDepth(6)
@@ -206,6 +206,8 @@ function gameOver() {
     gamePaused = true; // Set game paused state to true
 
     // Update the game over text to show the score
+    this.jumpButton.setVisible(false);
+    this.jumpText.setVisible(false);
     this.gameOverText.setText(`You scored: ${score}`).setVisible(true); // Show score
     this.restartButton.setVisible(true); // Show restart button
     this.restartText.setVisible(true); // Show restart text
