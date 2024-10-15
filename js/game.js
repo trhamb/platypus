@@ -102,6 +102,7 @@ function create() {
             color: "#ffffff", // White color for the text
         })
         .setShadow(3, 3, "#000000", 0.5, true)
+        .setDepth(5)
         .setVisible(false); // Hide score initially
 
     // Create a group for rocks (Initially not active)
@@ -223,8 +224,6 @@ function gameOver() {
 
 // Function to refresh the page on restart
 function restartGame() {
-    console.log("Restarting game...");
-
     // Reset game state
     gamePaused = false; // Allow the game to be played again
     score = 0; // Reset score
@@ -248,11 +247,15 @@ function restartGame() {
     // Reset and hide all rocks
     resetRocks.call(this);
 
+    // Reset and hide all clouds
+    resetClouds.call(this); // Reset clouds
+
     // Ensure physics is resumed
     this.physics.resume(); // Resume physics
 
-    // Restart spawning rocks
+    // Restart spawning rocks and clouds
     spawnRocks.call(this);
+    spawnClouds.call(this); // Restart spawning clouds
 }
 
 // Function to reset all rocks
@@ -262,6 +265,17 @@ function resetRocks() {
             rock.setActive(false).setVisible(false); // Deactivate and hide rocks
             rock.body.setVelocityX(0); // Reset velocity
             rock.body.reset(0, 0); // Reset position
+        }
+    });
+}
+
+// Function to reset all clouds
+function resetClouds() {
+    this.cloudsGroup.children.iterate((cloud) => {
+        if (cloud.active) {
+            cloud.setActive(false).setVisible(false); // Deactivate and hide clouds
+            cloud.body.setVelocityX(0); // Reset velocity
+            cloud.body.reset(0, 0); // Reset position
         }
     });
 }
