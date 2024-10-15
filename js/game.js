@@ -8,7 +8,7 @@ let config = {
         default: "arcade",
         arcade: {
             gravity: 0,
-            debug: true,
+            debug: false,
         },
     },
     scene: {
@@ -30,6 +30,7 @@ function preload() {
     // Preload assets here
     this.load.image("player", "assets/boat.png");
     this.load.image("rock", "assets/rock.png");
+    this.load.image("cloud", "assets/cloud.png");
 }
 
 function create() {
@@ -184,6 +185,12 @@ function create() {
         .setOrigin(0.5)
         .setDepth(6)
         .setVisible(false); // Hide initially
+
+    // Create a group for clouds (Initially not active)
+    this.cloudsGroup = this.physics.add.group({
+        defaultKey: "cloud",
+        maxSize: 10, // Limit the number of clouds for recycling
+    });
 }
 
 // Function to start the game
@@ -197,6 +204,7 @@ function startGame() {
     this.startText.setVisible(false);
     score = 0; // Reset score
     spawnRocks.call(this); // Start spawning rocks
+    spawnClouds.call(this); // Spawn clouds
 }
 
 // Function to handle game over
@@ -274,6 +282,45 @@ function spawnRocks() {
                 }
                 spawnRocks.call(this); // Continue spawning rocks
             }
+        },
+        callbackScope: this,
+    });
+}
+
+function spawnClouds() {
+    this.time.addEvent({
+        delay: Phaser.Math.Between(4000, 10000), // Random delay between 1 and 4 seconds
+        callback: () => {
+            let cloud = this.cloudsGroup.get();
+            if (cloud) {
+                cloud.setActive(true).setVisible(true);
+                cloud.setScale(0.3); // Adjust scale to be at least twice the size
+                cloud.setDepth(0); // Set depth so it's behind other elements
+
+                // Set the X position to be just off the right-hand side of the screen
+                let randomX = window.innerWidth + 100; // Spawns just off-screen to the right
+                // Randomize the Y position between the top and halfway down the window
+                let randomY = Phaser.Math.Between(0, window.innerHeight / 2); // Between top and halfway down
+                cloud.setPosition(randomX, randomY);
+
+                // Make the cloud drift to the left
+                cloud.body.setVelocityX(-50); // Adjust speed as needed
+
+                // Instead of using a timeout, check when the cloud is off-screen
+                this.time.addEvent({
+                    delay: 100, // Check every 100 ms
+                    callback: () => {
+                        // Check if the cloud is out of bounds
+                        if (cloud.x < -cloud.width) {
+                            // Ensure the cloud is completely off-screen
+                            cloud.setActive(false).setVisible(false);
+                        }
+                    },
+                    loop: true, // Keep checking until the cloud is off-screen
+                    callbackScope: this,
+                });
+            }
+            spawnClouds.call(this); // Continue spawning clouds
         },
         callbackScope: this,
     });
