@@ -8,7 +8,7 @@ let config = {
         default: "arcade",
         arcade: {
             gravity: 0,
-            debug: false,
+            debug: true,
         },
     },
     scene: {
@@ -216,7 +216,35 @@ function gameOver() {
 // Function to refresh the page on restart
 function restartGame() {
     console.log("Restarting game...");
-    location.reload(); // Refresh the page
+
+    // Reset game state
+    gamePaused = false; // Allow the game to be played again
+    score = 0; // Reset score
+    this.scoreText.setText(`Score: ${score}`); // Update score display
+
+    // Hide game over text and restart button
+    this.gameOverText.setVisible(false);
+    this.restartButton.setVisible(false);
+    this.restartText.setVisible(false);
+
+    // Make player and buttons visible again
+    this.player.setVisible(true);
+    this.jumpButton.setVisible(true);
+    this.jumpButton.setInteractive(); // Make the button interactive again
+    this.jumpText.setVisible(true);
+    this.scoreText.setVisible(true);
+
+    // Reset player physics body
+    this.player.body.setVelocity(0); // Reset player's velocity
+
+    // Reset and hide all rocks
+    resetRocks.call(this);
+
+    // Ensure physics is resumed
+    this.physics.resume(); // Resume physics
+
+    // Restart spawning rocks
+    spawnRocks.call(this);
 }
 
 // Function to reset all rocks
@@ -225,6 +253,7 @@ function resetRocks() {
         if (rock.active) {
             rock.setActive(false).setVisible(false); // Deactivate and hide rocks
             rock.body.setVelocityX(0); // Reset velocity
+            rock.body.reset(0, 0); // Reset position
         }
     });
 }
